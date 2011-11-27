@@ -158,6 +158,13 @@ bool queue_insert_maxsize(p_queue_t queue, void *data,
 		{
 			temp = head;
 			head = head->next;
+			if (NULL == head)
+			{
+				temp->next = new_node;
+				queue->tail = new_node;
+				queue->size++;
+				break;
+			}
 		}
 		else
 		{

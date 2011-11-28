@@ -13,7 +13,7 @@ void create(int process_num);
 void priority(void);
 void queue_init();
 void err_exit(char *str_err);
-int compare(void *data1, void *data2);
+static int compare(void *data1, void *data2);
 static void jcb_print();
 p_jcb_t jcb_create();
 void info_print();
@@ -35,7 +35,7 @@ void create(int process_num)//初始化JCB信息
 {
 	p_jcb_t p = NULL;
 	char name_buffer[10];
-	int time;
+	float time;
 	int i;
 
 	queue_init();
@@ -46,7 +46,7 @@ void create(int process_num)//初始化JCB信息
 		printf("请输入第%d作业名(不超过10个字符):", i + 1);
 		gets(name_buffer);
 		printf("请输入作业执行时间:");
-		scanf("%d", &time);
+		scanf("%f", &time);
 
 		strcpy(p->name, name_buffer);
 		p->status = TASK_STATUS_READY;	/* 就绪状态 */
@@ -77,7 +77,7 @@ void err_exit(char *str_err)
 	exit(EXIT_FAILURE);	
 }
 
-int compare(void *data1, void *data2)
+static int compare(void *data1, void *data2)
 {
 	p_jcb_t p = (p_jcb_t)data1;
 	p_jcb_t q = (p_jcb_t)data2;
@@ -98,64 +98,30 @@ p_jcb_t jcb_create()
 		err_exit("malloc error");
 	return new_jcb;
 }
-static void jcb_print(p_jcb_t jcb)
-{
-	printf("%-10s%-10d%-10d%-10d", jcb->name, jcb->time.time_run,
-			jcb->time.time_needtime, jcb->priority);
 
-	if (jcb->status == TASK_STATUS_BLOCK)
+static void jcb_print(void *jcb)
+{
+	printf("%-10s%-10f%-10f%-10d", ((p_jcb_t)jcb)->name, ((p_jcb_t)jcb)->time.time_run,
+			((p_jcb_t)jcb)->time.time_needtime, ((p_jcb_t)jcb)->priority);
+
+	if (((p_jcb_t)jcb)->status == TASK_STATUS_BLOCK)
 		printf("%s\n", "TASK_STATUS_BLOCK");
-	else if (jcb->status == TASK_STATUS_READY)
+	else if (((p_jcb_t)jcb)->status == TASK_STATUS_READY)
 		printf("%s\n", "TASK_STATUS_READY");
-	else if (jcb->status == TASK_STATUS_RUNNING)
+	else if (((p_jcb_t)jcb)->status == TASK_STATUS_RUNNING)
 		printf("%s\n", "TASK_STATUS_RUNNING");
 	else
 		printf("%s\n", "TASK_STATUS_FINISH");
 }
+
 void info_print()
 {
-//	p_q_node_t head = ready->head;
 	
 	printf("\t\toutput of priority:\n");
 	printf("**********************************************************\n");
 	printf("名字  执行了的时间  还剩时间  优先数     状态\n");
 	queue_print(ready, jcb_print);
 	queue_print(finish, jcb_print);
-/*	while (head != NULL)
-	{
-		printf("%-10s%-10d%-10d%-10d", ((p_jcb_t)head->data)->name,
-		((p_jcb_t)head->data)->time.time_run, ((p_jcb_t)head->data)->time.time_needtime,
-		((p_jcb_t)head->data)->priority);
-		if (((p_jcb_t)head->data)->status == TASK_STATUS_BLOCK)
-			printf("%s\n", "TASK_STATUS_BLOCK");
-		else if (((p_jcb_t)head->data)->status == TASK_STATUS_READY)
-			printf("%s\n", "TASK_STATUS_READY");
-		else if (((p_jcb_t)head->data)->status == TASK_STATUS_RUNNING)
-			printf("%s\n", "TASK_STATUS_RUNNING");
-		else
-			printf("%s\n", "TASK_STATUS_FINISH");
-		head = head->next;
-	}
-	
-	head = finish->head;
-	if (finish->size != 0)
-	{
-		while (head != NULL)
-		{
-			printf("%-10s%-10d%-10d%-10d", ((p_jcb_t)head->data)->name,
-			((p_jcb_t)head->data)->time.time_run, ((p_jcb_t)head->data)->time.time_needtime,
-			((p_jcb_t)head->data)->priority);
-			if (((p_jcb_t)head->data)->status == TASK_STATUS_BLOCK)
-				printf("%s\n", "TASK_STATUS_BLOCK");
-			else if (((p_jcb_t)head->data)->status == TASK_STATUS_READY)
-				printf("%s\n", "TASK_STATUS_READY");
-			else if (((p_jcb_t)head->data)->status == TASK_STATUS_RUNNING)
-				printf("%s\n", "TASK_STATUS_RUNNING");
-			else
-				printf("%s\n", "TASK_STATUS_FINISH");
-			head = head->next;
-		}
-	}*/
 	getchar();	/* 按回车键继续 */
 }
 

@@ -5,8 +5,8 @@ typedef struct time{
 	float time_begin;		/* 作业开始时刻 */
 	float time_end;			/* 作业完成时刻 */
 	float time_submit;		/* 作业提交时间 */
-	int time_run;			/* 作业执行了的时间 */
-	int time_needtime;		/* 作业到完成还需要的时间 */
+	float time_run;			/* 作业执行了的时间 */
+	float time_needtime;		/* 作业到完成还需要的时间 */
 	float time_turnaround;		/* 作业周转时间 */
 	float time_turnaround_weight; 	/* 带权周转时间 */
 }worktime;
@@ -36,5 +36,10 @@ typedef struct jcb_control_block{
 #define TASK_STATUS_READY 	1	/* 就绪状态 */
 #define TASK_STATUS_RUNNING 	2 	/* 运行状态 */
 #define TASK_STATUS_FINISH	3	/* 完成状态 */
+
+/* 创建jcb结构 */
+p_jcb_t jcb_create();
+/* 错误处理函数 */
+void err_exit(char *str_err);
 
 #endif 	/* __JCB_H__ */

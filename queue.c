@@ -158,13 +158,6 @@ bool queue_insert_maxsize(p_queue_t queue, void *data,
 		{
 			temp = head;
 			head = head->next;
-			if (NULL == head)
-			{
-				temp->next = new_node;
-				queue->tail = new_node;
-				queue->size++;
-				break;
-			}
 		}
 		else
 		{
@@ -216,10 +209,18 @@ bool queue_insert_minsize(p_queue_t queue, void *data,
 	p_q_node_t temp = NULL;
 	while (head != NULL)
 	{
-		if (-1 == compare(head->data, data))
+		if (-1 == compare(head->data, data))	/* head->data小于data */
 		{
 			temp = head;
 			head = head->next;
+			if (NULL == head)
+			{
+				temp->next = new_node;
+				new_node->next = NULL;
+				queue->tail = new_node;
+				queue->size++;
+				return true;
+			}
 		}
 		else
 		{

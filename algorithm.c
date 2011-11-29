@@ -123,7 +123,8 @@ void priority()
                 {
                         ((p_jcb_t)head->data)->status = TASK_STATUS_FINISH;     /* 状态改为完成态 */
                         queue_put(finish, head->data);                          /* 插入完成队列   */
-                        ready->head = head->next;                               /* head在后面要删除 */
+                        ready->head = head->next;                             
+			free(head);
                         ready->size--;
                         head = run->head;
                 }
@@ -273,32 +274,22 @@ void sjf_create(int num_process)
 		p->time.time_needtime = time;	/* 才开始的needtime为time, 因为还没有执行 */
 		p->priority = 50 - time;
 	
-		queue_insert_maxsize(ready, p, compare_sjf);	/* 按运行时间大小插入就绪队列 */
+		queue_insert_minsize(ready, p, compare_sjf);	/* 按运行时间从小到达的顺序插入就绪队列 */
 		eat_line();
 	}	
 	sjf_print();
 }
 
+/* 浮点数大小比较 参考:http://wenku.baidu.com/view/833b736548d7c1c708a14566.html */
 static int compare_sjf(void *data1, void *data2)
 {
-//	float delta = 0.000001;	/* 精度 */
-/*	p_jcb_t p = (p_jcb_t)data1;
-	p_jcb_t q = (p_jcb_t)data2;
+	float limit = 0.000001;	/* 比较阀值 */
+	float temp1 = ((p_jcb_t)data1)->time.time_needtime;
+	float temp2 = ((p_jcb_t)data2)->time.time_needtime;
 
-	if (())
-
-	if (abs(p->time.time_needtime - q->time.time_needtime) > delta)
+	if ((temp1 - temp2) > limit)
 		return 1;
-	else if (abs(p->time.time_needtime - q->time.time_needtime) <= delta)
-		return 0;
-	else*/
-
-	unsigned int temp_1 = (unsigned int)(((p_jcb_t)data1)->time.time_needtime * 1000000);
-	unsigned int temp_2 = (unsigned int)(((p_jcb_t)data2)->time.time_needtime * 1000000);
-
-	if ((temp_1 - temp_2) > 0)
-		return 1;
-	else if ((temp_1 - temp_2) == 0)
+	else if (((temp1 - temp2) < limit) && ((temp1 - temp2) > limit))
 		return 0;
 	else
 		return -1;
@@ -342,8 +333,9 @@ void sjf()
 				< ((p_jcb_t)head->data)->time.time_needtime)
 				{
 					ready->head = head->next;
-					queue_insert_maxsize(ready, head->data, compare_sjf);
+					queue_insert_minsize(ready, head->data, compare_sjf);
 					ready->size--;
+					free(head);
 					head = run->head;
 				}
 			}

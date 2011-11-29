@@ -1,3 +1,12 @@
+/*********************************************************
+*	文件名: mian.c
+*
+*	文件描述: 调度算法
+*
+*	创建人: Astrol 2011-11-29 23:41:58
+*
+*	版本号: 1.0
+********************************************************/
 #include "jcb.h"
 #include "queue.h"
 #include "algorithm.h"
@@ -5,22 +14,46 @@
 #include <errno.h>
 #include <stdlib.h>
 
-//p_queue_t ready = NULL;	/* 就绪队列 */
-//p_queue_t run = NULL;	/* 运行队列 */
-//p_queue_t finish = NULL;/* 完成队列 */
-
 void menu_show();
-void choice(int num_process);
 
-int main(int argc, char *argv[])	/* atoi(argv[1]) 为作业数量 */
+int main(int argc, char *argv[])
 {
+	int choice;
+
 	if (argc != 2)
 	{
-		fprintf(stderr, "Usage: [%s] + num_process\n", argv[1]);
+		fprintf(stderr, "Usage: [%s] + num_process\n", argv[0]);
 	}
 
-	menu_show();
-	choice(atoi(argv[1]));
+	while (true)
+	{
+		menu_show();
+		scanf("%d", &choice);
+
+		switch(choice)
+		{
+			case 1:
+				priority_create(atoi(argv[1]));
+				priority();
+				break;
+			case 2:
+				fcfs_create(atoi(argv[1]));
+				fcfs();
+				break;
+			case 3:
+				sjf_create(atoi(argv[1]));
+				sjf();
+				break;
+			case 0:
+				printf("退出程序...\n");
+				break;
+			default:
+				printf("选择错误，请重新选择!\n");
+				break;
+		}	
+		if (choice == 0)
+			break;
+	}
 	return EXIT_SUCCESS;
 }
 
@@ -29,29 +62,6 @@ void menu_show()
 	printf("1. 优先级调度算法\n");
 	printf("2. 先来先服务算法\n");
 	printf("3. 最短作业优先算法\n");
-	printf("0. 推出程序\n");
-}
-
-void choice(int num_process)
-{
-	int choice;
+	printf("0. 退出程序\n");
 	printf("请选择:");
-	scanf("%d", &choice);
-	switch(choice)
-	{
-		case 1:
-			priority_create(num_process);
-			priority();
-			break;	
-		case 2:
-			fcfs_create(num_process);
-			fcfs();	
-			break;
-		case 3:
-			sjf_create(num_process);
-			sjf();
-			break;
-		default:
-			break;
-	}
 }

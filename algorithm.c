@@ -1,3 +1,12 @@
+/***************************************************************
+*	文件名: algorithm.c
+*
+*	文件描述: 作业调度算法的具体实现
+*
+*	创建人: Astrol 2011-11-30 0:08:09
+*
+*	版本号: 
+***************************************************************/
 #include "jcb.h"
 #include "queue.h"
 #include <math.h>
@@ -59,7 +68,7 @@ void priority_create(int num_process)
                 p->time.time_run = 0;           /* 才开始执行了的时间为0 */
                 p->time.time_needtime = time;   /* 才开始的needtime为time,因为还没有执行 */
 
-                queue_insert_maxsize(ready, p, compare_priority);/* 按照优先级大小插入就绪队列 */
+                queue_insert_maxsize(ready, p, compare_priority);	/* 按照优先级大小插入就绪队列 */
                 eat_line();
 	}
 	priority_print();
@@ -93,12 +102,12 @@ static void jcb_print(void *jcb)
 
 static int compare_priority(void *data1, void *data2)
 {
-	p_jcb_t p = (p_jcb_t)data1;
-	p_jcb_t q = (p_jcb_t)data2;
+	int p = ((p_jcb_t)data1)->priority;
+	int q = ((p_jcb_t)data2)->priority;
 	
-	if ((p->priority - q->priority) > 0)
+	if ((p - q) > 0)
 		return 1;
-	else if ((p->priority - q->priority) == 0)
+	else if ((p - q) == 0)
 		return 0;
 	else
 		return -1;
@@ -112,13 +121,12 @@ static void eat_line()
 
 void priority()
 {
-	run = ready;
         p_q_node_t head = run->head;
         while (head != NULL)
         {
                 ((p_jcb_t)head->data)->time.time_run += 1;      /* 每运行一次, 执行了的时间增加1单位    */
                 ((p_jcb_t)head->data)->time.time_needtime -= 1; /* 每运行一次, 还剩的时间减1个单位      */
-                ((p_jcb_t)head->data)->priority -= 3;           /* 每运行一次, 优先数较低3个单位        */
+                ((p_jcb_t)head->data)->priority -= 3;           /* 每运行一次, 优先数降低3个单位        */
                 if ( 0 == ((p_jcb_t)head->data)->time.time_needtime)
                 {
                         ((p_jcb_t)head->data)->status = TASK_STATUS_FINISH;     /* 状态改为完成态 */
@@ -136,10 +144,12 @@ void priority()
                                 if (((p_jcb_t)head->data)->priority < ((p_jcb_t)head->next->data)->priority)
                                 {
                                         ready->head = head->next;
-                                        queue_insert_maxsize(ready, head->data, compare_priority);
+                                        queue_insert_maxsize(ready, head->data, compare_priority); 
+					free(head);
                                         ready->size--;
                                         head = run->head;
                                 }
+
                         }
                 }
                 priority_print();
@@ -335,7 +345,7 @@ void sjf()
 					ready->head = head->next;
 					queue_insert_minsize(ready, head->data, compare_sjf);
 					ready->size--;
-					free(head);
+		//			free(head);
 					head = run->head;
 				}
 			}

@@ -125,21 +125,74 @@ bool queue_put(p_queue_t queue, void *data)
 	return true;
 }
 
-bool queue_insert_maxsize(p_queue_t queue, void *data, 
-	int (*compare)(void *data1, void *data2))
+bool queue_insert_maxsize(p_queue_t queue, void *data,
+		int (*compare)(void *data1, void *data2))
+{
+	if (NULL == queue)
+	{
+		errno = EINVAL;	
+		return false;
+	}
+
+	if (0 == queue->size)
+	{
+		queue->head->data = data;
+		queue->size++;
+		return true;
+	}
+	
+	p_q_node_t new_node = NULL;
+	new_node = node_create(data);
+	if (NULL == new_node)
+	{
+		errno = ENOMEM;
+		return false;
+	}
+
+	p_q_node_t head = queue->head;
+	p_q_node_t temp = queue->head;
+	int flag = 1;
+	while (head != NULL && flag != 0)
+	{
+		if (1 == compare(head->data, data))	/* head->data 大于 data */
+		{
+			temp = head;
+			head = head->next;
+		}
+		else
+			flag = 0;
+	}
+
+	if (temp != head)	/* 如果条件成立, 插入temp和head之间 */
+	{
+		temp->next = new_node;
+		new_node->next = head;
+		if (NULL == head)
+			queue->tail = new_node;
+		queue->size++;
+	}
+	else
+	{
+		new_node->next = queue->head;	/* 否则插在头部 */
+		queue->head = new_node;
+		queue->size++;
+	}
+	return true;
+}
+bool queue_insert_minsize(p_queue_t queue, void *data,
+			int (*compare)(void *data1, void *data2))
 {
 	if (NULL == queue)
 	{
 		errno = EINVAL;
 		return false;
 	}
-
-	if (queue->size == 0)
+	
+	if (0 == queue->size)
 	{
 		queue->head->data = data;
 		queue->size++;
 		return true;
-
 	}
 
 	p_q_node_t new_node = NULL;
@@ -149,38 +202,39 @@ bool queue_insert_maxsize(p_queue_t queue, void *data,
 		errno = ENOMEM;
 		return false;
 	}
-
-	p_q_node_t head = queue->head;	/* head指向第一个结点 */
-	p_q_node_t temp = NULL;
-	while (head != NULL)
+	
+	p_q_node_t head = queue->head;
+	p_q_node_t temp = head;
+	int flag = 1;
+	while (head != NULL && flag != 0)
 	{
-		if (1 == compare(head->data, data))	/* 大于 */
+		if (-1 == compare(head->data, data))
 		{
 			temp = head;
 			head = head->next;
 		}
 		else
-		{
-			if (head == queue->head)
-			{
-				new_node->next = queue->head;
-				queue->head = new_node;
-				queue->size++;
-				break;				
-			}
-			else
-			{
-				temp->next = new_node;		
-				new_node->next = head;
-				queue->size++;
-				break;
-			}
-		}
+			flag = 0;
 	}
 	
+	if (temp != head)
+	{
+		temp->next = new_node;
+		new_node->next = head;
+		if (NULL == head)
+			queue->tail = new_node;
+		queue->size++;
+	}
+	else
+	{
+		new_node->next = queue->head;
+		queue->head = new_node;
+		queue->size++;
+	}
+
 	return true;
 }
-
+/*
 bool queue_insert_minsize(p_queue_t queue, void *data, 
 		int (*compare)(void *data1, void *data2))
 {
@@ -210,8 +264,8 @@ bool queue_insert_minsize(p_queue_t queue, void *data,
 	while (head != NULL)
 	{
 		if (-1 == compare(head->data, data))	/* head->data小于data */
-		{
-			temp = head;
+//		{
+/*			temp = head;
 			head = head->next;
 			if (NULL == head)
 			{
@@ -241,7 +295,8 @@ bool queue_insert_minsize(p_queue_t queue, void *data,
 		}
 	}
 	return true;
-}
+}*/
+
 bool queue_delete(p_queue_t queue)
 {
 	if (NULL == queue)

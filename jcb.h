@@ -1,3 +1,13 @@
+/***************************************************************
+*	文件名: jcb.h
+*
+*	文件描述: jcb头文件
+*
+*	创建人: Astrol 2011-11-29 23:44:37
+*
+*	版本号: 1.0
+****************************************************************/
+
 #ifndef __JCB_H__
 #define __JCB_H__
 
@@ -28,7 +38,6 @@ typedef struct jcb_control_block{
 	int priority;       		/* 进程优先级 	*/
 	worktime time;			/* 时间集合	*/
 	float response_ratio;		/* 响应比 	*/
-	struct jcb_control_block *next;	/* 指针域	*/		
 }jcb_t, *p_jcb_t;
 
 /* 进程状态宏定义 */

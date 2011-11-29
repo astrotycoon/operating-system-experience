@@ -11,8 +11,8 @@ typedef struct time{
 	float time_turnaround_weight; 	/* 带权周转时间 */
 }worktime;
 /*--------------------------------------------------------------|	
- |	作业周转时间 = 作业提交时刻 - 作业完成时刻		|
- |	time_turnaround = time_submit - time_end		|
+ |	作业周转时间 = 作业完成时刻 - 作业提交时间		|
+ |	time_turnaround = time_end - time_submit		|
  |--------------------------------------------------------------|
  | 	带权周转时间 = 作业周转时间 / 作业执行时间		|
  |	time_turnaround_weight = time_turnaround / time_run	| 								

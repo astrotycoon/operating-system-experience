@@ -27,6 +27,8 @@ int main(int argc, char *argv[])	/* atoi(argv[1]) 为作业数量 */
 void menu_show()
 {
 	printf("1. 优先级调度算法\n");
+	printf("2. 先来先服务算法\n");
+	printf("3. 最短作业优先算法\n");
 	printf("0. 推出程序\n");
 }
 
@@ -40,10 +42,16 @@ void choice(int num_process)
 		case 1:
 			priority_create(num_process);
 			priority();
-			break;		
-
+			break;	
+		case 2:
+			fcfs_create(num_process);
+			fcfs();	
+			break;
+		case 3:
+			sjf_create(num_process);
+			sjf();
+			break;
 		default:
 			break;
 	}
-
 }
